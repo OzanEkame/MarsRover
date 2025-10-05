@@ -1,0 +1,27 @@
+# File: docker-compose.yml
+services:
+  ros2desk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Pick the platform explicitly if you like:
+      #   Apple silicon: linux/arm64
+      #   Intel Mac:     linux/amd64
+      # platform: linux/arm64
+    container_name: ros2-humble-novnc
+    ports:
+      - "6080:80"     # noVNC in your browser
+      - "5900:5900"   # optional: native VNC client (better clipboard)
+    security_opt:
+      - seccomp:unconfined   # required by Humble image
+    shm_size: "1g"
+    environment:
+      - RESOLUTION=1920x1080
+      - LIBGL_ALWAYS_SOFTWARE=1
+      # Optional hardening if you open beyond localhost:
+      # - HTTP_PASSWORD=changeme  # basic auth for the web UI (upstream base supports it)
+      # - VNC_PASSWORD=changeme   # VNC viewer password if you expose 5900
+    volumes:
+      - ./ws:/workspaces/ros2_ws  # edit on host, build in container
+    tty: true
+    stdin_open: true
